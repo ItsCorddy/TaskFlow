@@ -1,0 +1,32 @@
+
+{% extends 'tasks/base.html' %}
+
+{% block content %}
+
+<div class="card form-box">
+
+    <h2>{{ heading }}</h2>
+
+    <p class="muted">
+        Enter your task details below.
+    </p>
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <button class="btn" type="submit">
+            Save Task
+        </button>
+
+        <a href="{% url 'dashboard' %}" class="btn btn-gray">
+            Cancel
+        </a>
+
+    </form>
+
+</div>
+
+{% endblock %}

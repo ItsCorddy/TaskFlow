@@ -1,0 +1,29 @@
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Database
+db.sqlite3
+db.sqlite3-journal
+
+# Secrets
+.env
+.env.*
+.taskflow_secret
+*.pem
+
+# Deployment files
+staticfiles/
+*.zip
+
+# Editor settings
+.vscode/
+
+# System files
+.DS_Store
+Thumbs.db

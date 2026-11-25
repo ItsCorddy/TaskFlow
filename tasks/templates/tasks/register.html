@@ -1,0 +1,36 @@
+
+{% extends 'tasks/base.html' %}
+
+{% block content %}
+
+<div class="card form-box">
+
+    <h1>Create an Account</h1>
+
+    <p class="muted">
+        Start organizing your academic and personal tasks.
+    </p>
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <button class="btn" type="submit">
+            Register
+        </button>
+
+    </form>
+
+    <p>
+        Already have an account?
+
+        <a href="{% url 'login' %}">
+            Login here
+        </a>
+    </p>
+
+</div>
+
+{% endblock %}

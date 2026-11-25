@@ -1,0 +1,214 @@
+
+{% extends 'tasks/base.html' %}
+
+{% block content %}
+
+<div class="welcome-section">
+    <span class="eyebrow">YOUR PRODUCTIVITY WORKSPACE</span>
+
+    <h1>Welcome back, {{ user.username }}!</h1>
+
+    <p class="muted">
+        Stay organized, manage your deadlines and achieve more.
+    </p>
+</div>
+
+<div class="stats">
+
+    <div class="stat">
+        <span class="stat-icon">📋</span>
+        <p>Total Tasks</p>
+        <h2>{{ total_tasks }}</h2>
+    </div>
+
+    <div class="stat" style="border-color: #f59e0b;">
+        <span class="stat-icon">⏳</span>
+        <p>Pending</p>
+        <h2>{{ pending_tasks }}</h2>
+    </div>
+
+    <div class="stat" style="border-color: #16a34a;">
+        <span class="stat-icon">✅</span>
+        <p>Completed</p>
+        <h2>{{ completed_tasks }}</h2>
+    </div>
+
+    <div class="stat" style="border-color: #dc2626;">
+        <span class="stat-icon">📅</span>
+        <p>Overdue</p>
+        <h2>{{ overdue_tasks }}</h2>
+    </div>
+
+</div>
+
+<div class="card">
+
+    <div class="section-header">
+        <h2>Your Progress</h2>
+        <strong style="color: #16a34a;">
+            {{ progress }}%
+        </strong>
+    </div>
+
+    <div class="progress-track">
+        <div class="progress-fill"
+     data-progress="{{ progress }}">
+</div>
+
+<script>
+    document.querySelectorAll('.progress-fill').forEach(function(bar) {
+        bar.style.width = bar.dataset.progress + '%';
+    });
+</script>
+    </div>
+
+    <p class="muted">
+        {{ completed_tasks }} of {{ total_tasks }} tasks completed.
+    </p>
+
+</div>
+
+<div class="card">
+
+    <div class="section-header">
+        <h2>My Tasks</h2>
+
+        <a href="{% url 'add_task' %}" class="btn">
+            + New Task
+        </a>
+    </div>
+
+    <form method="GET" class="search-form">
+
+        <input type="text"
+               name="search"
+               value="{{ search }}"
+               placeholder="Search your tasks...">
+
+        <select name="status">
+
+            <option value="all"
+                {% if status == 'all' %}selected{% endif %}>
+                All Tasks
+            </option>
+
+            <option value="pending"
+                {% if status == 'pending' %}selected{% endif %}>
+                Pending
+            </option>
+
+            <option value="completed"
+                {% if status == 'completed' %}selected{% endif %}>
+                Completed
+            </option>
+
+        </select>
+
+        <button class="btn" type="submit">
+            Filter
+        </button>
+
+        <a href="{% url 'dashboard' %}" class="btn btn-gray">
+            Reset
+        </a>
+
+    </form>
+
+    {% for task in tasks %}
+
+        <div class="task">
+
+            <div class="section-header">
+
+                <h3 class="{% if task.completed %}completed{% endif %}">
+                    {{ task.title }}
+                </h3>
+
+                <span class="priority {{ task.priority }}">
+                    {{ task.priority }}
+                </span>
+
+            </div>
+
+            <p class="muted">
+                {{ task.description }}
+            </p>
+
+            <p class="muted">
+                📅 Deadline: {{ task.due_date|default:"No deadline" }}
+            </p>
+
+            {% if task.completed %}
+
+                <span class="status-completed">
+                    ✓ Completed
+                </span>
+
+            {% elif task.due_date and task.due_date < today %}
+
+                <span class="status-overdue">
+                    Overdue
+                </span>
+
+            {% else %}
+
+                <span class="status-pending">
+                    Pending
+                </span>
+
+            {% endif %}
+
+            <div class="task-actions">
+
+                <form method="POST"
+                      action="{% url 'complete_task' task.pk %}">
+
+                    {% csrf_token %}
+
+                    <button class="btn btn-green" type="submit">
+
+                        {% if task.completed %}
+                            Mark Pending
+                        {% else %}
+                            ✓ Complete
+                        {% endif %}
+
+                    </button>
+
+                </form>
+
+                <a class="btn"
+                   href="{% url 'edit_task' task.pk %}">
+                    Edit
+                </a>
+
+                <form method="POST"
+                      action="{% url 'delete_task' task.pk %}"
+                      onsubmit="return confirm('Delete this task?');">
+
+                    {% csrf_token %}
+
+                    <button class="btn btn-red" type="submit">
+                        Delete
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    {% empty %}
+
+        <div class="empty-state">
+            <h3>No tasks found</h3>
+            <p class="muted">
+                Add a new task or change your search filters.
+            </p>
+        </div>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}
